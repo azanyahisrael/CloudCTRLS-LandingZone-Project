@@ -51,3 +51,21 @@ Decisions made in this step are recorded in [ADR-0001](../decisions/0001-reposit
 **Status:** Complete, 2026-11-18.
 
 Created the `docs/` folders, README, PROJECT_PROGRESS and CHANGELOG. Code folders (`modules/`, `bootstrap/`, `app/` and so on) are created in the phase that needs them, so the repository never shows structure for work that does not exist yet.
+
+## Step 5: GitHub repository and branch protection
+
+**Status:** Complete, validated 2026-11-18.
+
+- Published as the public repository `CloudCTRLS-LandingZone-Project`, default branch `main`. The project itself is still named CloudCTRLS.
+- The GitHub repository was created empty so the local history pushed without conflicts. Authentication used Git Credential Manager's browser sign-in, so no token is stored in the repository.
+- A branch ruleset on `main` restricts deletion and blocks force pushes, so published history cannot be rewritten. Pull request and status-check requirements will be added in Phase 7, once CI checks exist.
+
+**Validation**
+
+```
+git log --oneline origin/main         -> 25befd8, matches local main
+GET /repos/.../branches/main          -> "protected": true
+GET /repos/.../rules/branches/main    -> rules: deletion, non_fast_forward
+```
+
+**Issue hit:** the ruleset was created but not enforced until **Enforcement status** was set to **Active**, because GitHub defaults new rulesets to Disabled.

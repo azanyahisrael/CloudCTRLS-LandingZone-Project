@@ -12,3 +12,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - ADR-0001: repository conventions
 - Phase 1 implementation evidence, troubleshooting log and lessons learned
 - Initial NIST SP 800-53 control mapping
+- Public GitHub repository with a branch ruleset protecting `main` from deletion and force pushes

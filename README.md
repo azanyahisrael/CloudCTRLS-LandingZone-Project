@@ -2,7 +2,7 @@
 
 A secure, reusable multi-cloud infrastructure platform that manages Microsoft Azure and AWS as one system, built with Terraform, Packer, Docker, GitHub Actions and unified monitoring.
 
-> **Status: Phase 1, project foundation (in progress).** No cloud infrastructure is deployed yet. Everything below marked *Planned* is design intent, not completed work.
+> **Status: Phase 1 (project foundation) complete. Phase 2 (Terraform foundation) is next.** No cloud infrastructure is deployed yet. Everything below marked *Planned* is design intent, not completed work.
 
 ## Why I built this
 
@@ -25,7 +25,7 @@ See [docs/architecture/overview.md](docs/architecture/overview.md).
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Planning, repo structure, dev environment, docs | In progress |
+| 1 | Planning, repo structure, dev environment, docs | Complete |
 | 2 | Terraform foundation and module structure | Planned |
 | 3 | Azure + AWS landing zones (governance, identity, networking, logging) | Planned |
 | 4 | CIS-hardened golden images (Packer) | Planned |

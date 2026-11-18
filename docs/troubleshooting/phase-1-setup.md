@@ -19,3 +19,10 @@
 - **Symptom:** after editing `.gitignore` and `.gitattributes`, the files on disk were unchanged.
 - **Diagnosis:** the edits were unsaved in VS Code (white dot on the editor tab).
 - **Resolution:** saved the files. Auto Save (File > Auto Save) prevents this.
+
+## 4. Branch protection not enforced
+
+- **Symptom:** after creating a ruleset for `main`, the GitHub API still reported `"protected": false` and no active rules.
+- **Diagnosis:** new rulesets default to **Enforcement status: Disabled**. A disabled ruleset exists but enforces nothing.
+- **Resolution:** set Enforcement status to Active with `main` as the target. The API then returned `"protected": true` with `deletion` and `non_fast_forward` rules.
+- **Lesson:** another case of verifying the effect, not the configuration screen.
