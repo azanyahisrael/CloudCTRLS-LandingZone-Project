@@ -17,3 +17,5 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - ADR-0003: Terraform for Infrastructure as Code
 - ADR-0004: Terraform remote state stored per cloud
 - Budget alerts in Azure (subscription scope) and AWS (account scope); MFA on privileged accounts
+- ADR-0005: Azure East US primary, AWS us-west-2 secondary
+- CLI access for both clouds using short-lived browser sign-in, no stored access keys

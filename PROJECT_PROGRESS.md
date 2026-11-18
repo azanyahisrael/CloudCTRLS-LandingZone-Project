@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 2, Step 3:** sign in to the Azure and AWS CLIs without long-lived access keys.
+**Phase 2, Step 4:** bootstrap the Terraform state backends (Azure Storage in `eastus`, S3 in `us-west-2`).
 
 ## Completed
 
@@ -15,10 +15,16 @@
 | 1.5 | Public GitHub repository, `main` protected | 2026-11-18 | [Phase 1 implementation](docs/implementation/phase-1-foundation.md#step-5-github-repository-and-branch-protection) |
 | 2.1 | Remote state design: state per cloud | 2026-11-18 | [ADR-0004](docs/decisions/0004-terraform-state-per-cloud.md) |
 | 2.2 | Budget alerts and MFA in Azure and AWS | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-2-account-safety-before-billable-resources) |
+| 2.3 | CLI access without stored keys; regions decided | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-3-cli-access-without-long-lived-keys), [ADR-0005](docs/decisions/0005-regions.md) |
 
 ## Blockers
 
 None.
+
+## Open risks
+
+- Long-lived AWS access key for `azx2` is active on another computer. Migrate it to `aws login`, then deactivate the key.
+- Leftover Azure resource group `rg-packer-lab` from an earlier project is the likely source of unexplained spend.
 
 ## Next
 
