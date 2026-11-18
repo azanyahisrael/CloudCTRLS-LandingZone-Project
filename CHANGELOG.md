@@ -16,3 +16,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - ADR-0002: Azure as primary cloud, AWS as secondary
 - ADR-0003: Terraform for Infrastructure as Code
 - ADR-0004: Terraform remote state stored per cloud
+- Budget alerts in Azure (subscription scope) and AWS (account scope); MFA on privileged accounts

@@ -53,4 +53,4 @@ Progress: [PROJECT_PROGRESS.md](PROJECT_PROGRESS.md) · Changes: [CHANGELOG.md](
 
 ## Security note
 
-This repository never contains credentials, Terraform state, or real variable values. See [.gitignore](.gitignore) for what is excluded.
+This repository never contains credentials, Terraform state, or real variable values. See [.gitignore](.gitignore) for what is excluded. Screenshots used as evidence are cropped to remove account IDs, subscription IDs and email addresses.
