@@ -2,7 +2,9 @@
 
 ## Current
 
-**Phase 1 complete.** Next: Phase 2, Terraform foundation.
+**Phase 2, Step 2:** budget alerts and account security in Azure and AWS, before anything billable is created.
+
+Phase 2, Step 1 decision recorded: [ADR-0004, state per cloud](docs/decisions/0004-terraform-state-per-cloud.md).
 
 ## Completed
 

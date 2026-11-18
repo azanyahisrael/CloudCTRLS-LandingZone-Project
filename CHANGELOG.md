@@ -15,3 +15,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Public GitHub repository with a branch ruleset protecting `main` from deletion and force pushes
 - ADR-0002: Azure as primary cloud, AWS as secondary
 - ADR-0003: Terraform for Infrastructure as Code
+- ADR-0004: Terraform remote state stored per cloud
