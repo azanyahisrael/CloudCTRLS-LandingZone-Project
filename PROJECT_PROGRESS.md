@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 2, Step 5:** Terraform module structure and shared conventions for workloads.
+**Phase 2 complete.** Next: Phase 3, Azure and AWS landing zones.
 
 ## Completed
 
@@ -18,6 +18,7 @@
 | 2.3 | CLI access without stored keys; regions decided | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-3-cli-access-without-long-lived-keys), [ADR-0005](docs/decisions/0005-regions.md) |
 | 2.4a | Azure state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4a-azure-state-backend) |
 | 2.4b | AWS state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4b-aws-state-backend) |
+| 2.5 | Module layout and tested naming module | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-5-module-structure-and-naming-module), [ADR-0006](docs/decisions/0006-module-and-root-layout.md) |
 
 ## Blockers
 
@@ -30,4 +31,4 @@ None.
 
 ## Next
 
-- Phase 2: Terraform foundation (remote state and module structure)
+- Phase 3: Azure and AWS landing zones (governance, identity, networking, logging). Raise the $1 AWS budget before adding KMS, CloudTrail and AWS Config.

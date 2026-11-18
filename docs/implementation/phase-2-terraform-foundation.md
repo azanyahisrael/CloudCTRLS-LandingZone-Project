@@ -119,3 +119,23 @@ Lock test: fake bootstrap/aws.tfstate.tflock created, then terraform plan
                                     -> Error acquiring the state lock: PreconditionFailed
 Bucket checks                       -> versioning Enabled, SSE AES256, public access block 4/4, BucketOwnerEnforced, TLS-only policy
 ```
+
+## Step 5: Module structure and naming module
+
+**Status:** Complete, validated 2026-11-18. Layout decided in [ADR-0006](../decisions/0006-module-and-root-layout.md).
+
+- **Layout:** reusable modules under `modules/shared`, `modules/azure`, `modules/aws`; deployable roots under `environments/<env>/<cloud>/<layer>/`, each with its own state. Only `prod` is built; `dev` can be added with inputs alone. Root folders are created in the phase that first needs them.
+- **Naming module** ([modules/shared/naming](../../modules/shared/naming/)): takes `cloud`, `env`, `region`, `purpose` and an optional `name_suffix`, and returns `base`, `resource_group`, `storage_account`, `s3_bucket` and the standard `tags`. Other modules prefix `base` with the resource-type abbreviation (`vnet-`, `kv-`, `nsg-`). It creates no resources.
+- **Input guards:** `env` must be `dev` or `prod`; storage account names must be 3 to 24 lowercase letters or digits, checked at plan time.
+
+**Validation** (`terraform test`, plan-only, no cloud access needed)
+
+```
+run "matches_azure_bootstrap"            pass   names equal the deployed Azure backend
+run "matches_aws_bootstrap"              pass   bucket name equals the deployed S3 backend
+run "rejects_unknown_env"                pass   env = "qa" is refused
+run "rejects_too_long_storage_account"   pass   25+ character storage name is refused
+Success! 4 passed, 0 failed.
+```
+
+The bootstrap configurations keep their own inline naming. They are already deployed, and switching them to the module would rename and replace the state storage.

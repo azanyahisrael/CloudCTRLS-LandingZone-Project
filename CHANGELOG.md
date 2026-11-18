@@ -21,3 +21,5 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - CLI access for both clouds using short-lived browser sign-in, no stored access keys
 - `bootstrap/azure`: Terraform state backend in Azure Storage (Entra ID auth, versioning, delete lock); state migrated and locking verified
 - `bootstrap/aws`: Terraform state backend in S3 (public access blocked, ACLs disabled, TLS-only policy, versioning, native lock file); state migrated and locking verified
+- ADR-0006: module and root configuration layout (per environment, cloud and layer; prod only, dev-ready)
+- `modules/shared/naming`: naming and tagging module for both clouds, covered by `terraform test` (4 tests)
