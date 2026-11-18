@@ -1,0 +1,41 @@
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+# Real variable values can contain secrets or account IDs. Commit *.tfvars.example instead.
+*.tfvars
+*.tfvars.json
+# NOTE: do NOT ignore .terraform.lock.hcl. Committing it pins provider versions.
+
+# --- Packer ---
+packer_cache/
+*.pkrvars.hcl
+
+# --- Python (Sentinel) ---
+__pycache__/
+*.pyc
+.venv/
+
+# --- Secrets and keys ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# --- OS / editor ---
+Thumbs.db
+.DS_Store
+.vscode/

@@ -1,0 +1,13 @@
+# Normalize text files and store them with LF line endings
+* text=auto eol=lf
+
+# Windows-only scripts need CRLF
+*.bat  text eol=crlf
+*.cmd  text eol=crlf
+*.ps1  text eol=lf
+
+# Binary files: never touch them
+*.png  binary
+*.jpg  binary
+*.pfx  binary
+*.zip  binary
