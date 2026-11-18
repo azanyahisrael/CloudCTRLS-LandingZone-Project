@@ -1,0 +1,11 @@
+# Copy to terraform.tfvars (git-ignored) and fill in the TODOs.
+
+# TODO: your subscription ID. Find it with: az account show --query id -o tsv
+subscription_id = "TODO"
+
+# TODO: environment label. The state backend serves every environment,
+# so decide whether it is labelled as a shared/management resource or as prod.
+env = "TODO"
+
+# TODO: 1 to 5 lowercase letters/digits so the storage account name is globally unique.
+name_suffix = "TODO"

@@ -56,3 +56,34 @@ AWS_ACCESS_KEY_ID               -> not set in any scope
 ```
 
 **Known risk (open):** `azx2` still has an active long-lived access key, created before this project and used on another computer. Plan: switch that machine to `aws login`, then deactivate the key, then delete it once nothing depends on it.
+
+## Step 4a: Azure state backend
+
+**Status:** Complete, validated 2026-11-18. Code: [bootstrap/azure](../../bootstrap/azure/).
+
+| Resource | Name | Key settings |
+|---|---|---|
+| Resource group | `rg-cloudctrls-tfstate-prod-eastus` | Dedicated to state, separate lifecycle from workloads |
+| Storage account | `stcloudctrlstfstatectrl1` | ZRS, TLS 1.2, HTTPS only, no public blob access, shared keys disabled (Entra ID only), infrastructure encryption |
+| Blob protection | | Versioning, 30-day blob and container soft delete |
+| Role assignment | Storage Blob Data Contributor | Grants the Terraform identity data access, since keys are disabled |
+| Container | `tfstate` | Private |
+| Management lock | `lock-cloudctrls-tfstate-prod-eastus` | `CanNotDelete`, blocks accidental deletion including `terraform destroy` |
+
+**Naming convention** (Microsoft Cloud Adoption Framework style): `<type>-<project>-<purpose>-<env>-<region>`, for example `rg-cloudctrls-tfstate-prod-eastus`. Storage accounts allow no hyphens, so they use `st<project><purpose><suffix>`, where the suffix makes the name globally unique.
+
+**Bootstrap pattern (chicken-and-egg):** the first `apply` ran with local state. The `backend "azurerm"` block was then enabled and `terraform init -migrate-state` moved the state into the storage account it had just created (key `bootstrap/azure.tfstate`). The local state files were deleted.
+
+**Validation**
+
+```
+terraform plan -out tfplan          -> Plan: 5 to add, 0 to change, 0 to destroy (reviewed before apply)
+terraform apply tfplan              -> 5 resources created
+terraform init -migrate-state       -> state copied to the azurerm backend
+az storage blob list ... tfstate    -> bootstrap/azure.tfstate (18,541 bytes)
+terraform plan                      -> No changes (state read from Azure)
+Lock test: lease acquired on the state blob for 60 s, then terraform plan
+                                    -> Error acquiring the state lock: state blob is already locked
+```
+
+**Known limitation:** the storage account accepts connections from the internet (Entra ID authentication still required) so the laptop and GitHub-hosted runners can reach it. Network restriction is planned for Phase 3 or 7.

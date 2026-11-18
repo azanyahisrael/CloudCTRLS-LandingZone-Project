@@ -19,3 +19,4 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Budget alerts in Azure (subscription scope) and AWS (account scope); MFA on privileged accounts
 - ADR-0005: Azure East US primary, AWS us-west-2 secondary
 - CLI access for both clouds using short-lived browser sign-in, no stored access keys
+- `bootstrap/azure`: Terraform state backend in Azure Storage (Entra ID auth, versioning, delete lock); state migrated and locking verified

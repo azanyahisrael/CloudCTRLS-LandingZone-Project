@@ -1,4 +1,4 @@
-# Phase 1 Troubleshooting Log
+# Phase 1 and 2 Troubleshooting Log
 
 ## 1. Git identity did not save
 
@@ -26,3 +26,16 @@
 - **Diagnosis:** new rulesets default to **Enforcement status: Disabled**. A disabled ruleset exists but enforces nothing.
 - **Resolution:** set Enforcement status to Active with `main` as the target. The API then returned `"protected": true` with `deletion` and `non_fast_forward` rules.
 - **Lesson:** another case of verifying the effect, not the configuration screen.
+
+## 5. AWS CLI not found after installing it (Phase 2)
+
+- **Symptom:** `aws login` returned `The term 'aws' is not recognized`.
+- **Diagnosis:** `aws.exe` existed and its folder was in the system PATH. VS Code had been open during the install, and its terminals inherit the PATH VS Code started with, even new terminal tabs.
+- **Resolution:** closed every VS Code window and reopened it.
+
+## 6. State lock test showed no lock (Phase 2)
+
+- **Symptom:** with `terraform console` open in one terminal, `terraform plan` in another ran normally instead of failing on the lock.
+- **Diagnosis:** checking the state blob directly (`az storage blob show ... --query properties.lease`) showed `unlocked` while the console was open. `terraform console` reads state without holding the lock, so it was the wrong tool for the test.
+- **Resolution:** the azurerm backend locks by placing a lease on the state blob, so the test acquired that lease directly (`az storage blob lease acquire --lease-duration 60`). `terraform plan` then failed with `Error acquiring the state lock`, and the lease expired on its own.
+- **Lesson:** test a mechanism at the level it actually works at. Knowing that the Azure lock *is* a blob lease made a reliable test possible.
