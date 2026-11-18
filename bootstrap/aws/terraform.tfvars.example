@@ -1,0 +1,8 @@
+
+
+# AWS enviroment label prod
+
+env = "prod"
+
+# S3 bucket name suffix
+name_suffix = "ctrl1"

@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 2, Step 4b:** bootstrap the AWS Terraform state backend (S3 in `us-west-2`).
+**Phase 2, Step 5:** Terraform module structure and shared conventions for workloads.
 
 ## Completed
 
@@ -17,6 +17,7 @@
 | 2.2 | Budget alerts and MFA in Azure and AWS | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-2-account-safety-before-billable-resources) |
 | 2.3 | CLI access without stored keys; regions decided | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-3-cli-access-without-long-lived-keys), [ADR-0005](docs/decisions/0005-regions.md) |
 | 2.4a | Azure state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4a-azure-state-backend) |
+| 2.4b | AWS state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4b-aws-state-backend) |
 
 ## Blockers
 

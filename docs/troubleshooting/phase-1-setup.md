@@ -39,3 +39,17 @@
 - **Diagnosis:** checking the state blob directly (`az storage blob show ... --query properties.lease`) showed `unlocked` while the console was open. `terraform console` reads state without holding the lock, so it was the wrong tool for the test.
 - **Resolution:** the azurerm backend locks by placing a lease on the state blob, so the test acquired that lease directly (`az storage blob lease acquire --lease-duration 60`). `terraform plan` then failed with `Error acquiring the state lock`, and the lease expired on its own.
 - **Lesson:** test a mechanism at the level it actually works at. Knowing that the Azure lock *is* a blob lease made a reliable test possible.
+
+## 7. State locked indefinitely after acquiring a lease in the portal (Phase 2)
+
+- **Symptom:** a lease was acquired on `bootstrap/azure.tfstate` from the portal's storage browser.
+- **Diagnosis:** `az storage blob show ... --query properties.lease` showed `duration: infinite, status: locked`. Portal leases default to infinite, so every Terraform run on that state would fail until the lease was removed.
+- **Resolution:** broke the lease (portal **Break lease**, or `az storage blob lease break`). Status returned to `unlocked`.
+- **Recovery procedure for a stuck lock:** this is the same situation as a pipeline crashing mid-apply. Use `terraform force-unlock <LOCK_ID>` (ID shown in the lock error), or break the blob lease (Azure) / delete the `.tflock` object (AWS). Only do this when certain no run is active.
+
+## 8. `BucketAlreadyOwnedByYou` when re-applying a saved plan (Phase 2)
+
+- **Symptom:** `terraform apply tfplan` failed with `BucketAlreadyOwnedByYou` after the AWS state had been migrated.
+- **Diagnosis:** the same `tfplan` had already been applied. A saved plan is a snapshot ("state is empty, create the bucket") and also records the backend it was made with (local), so re-applying it ignored the S3 state and tried to create the bucket again. AWS refused, so nothing changed, but the run wrote an empty `terraform.tfstate` back to the laptop.
+- **Resolution:** confirmed state in S3 was intact (`terraform state list`: 7 resources; `terraform plan`: No changes), then deleted the stale `tfplan` and empty local state.
+- **Lesson:** a saved plan is single-use. Always create a fresh `terraform plan -out tfplan` before each apply.

@@ -87,3 +87,35 @@ Lock test: lease acquired on the state blob for 60 s, then terraform plan
 ```
 
 **Known limitation:** the storage account accepts connections from the internet (Entra ID authentication still required) so the laptop and GitHub-hosted runners can reach it. Network restriction is planned for Phase 3 or 7.
+
+## Step 4b: AWS state backend
+
+**Status:** Complete, validated 2026-11-18. Code: [bootstrap/aws](../../bootstrap/aws/).
+
+| Resource | Setting |
+|---|---|
+| S3 bucket `s3-cloudctrls-tfstate-prod-us-west-2-ctrl1` | `prevent_destroy`, so Terraform refuses to delete it |
+| Public access block | All four settings on |
+| Ownership controls | `BucketOwnerEnforced`: ACLs disabled, access by IAM and bucket policy only |
+| Versioning | Enabled; noncurrent versions expire after 30 days (matches Azure soft delete) |
+| Encryption | SSE-S3 (AES-256). Customer-managed KMS key planned for Phase 3 when the AWS budget is raised |
+| Bucket policy | Denies any request not made over HTTPS (`aws:SecureTransport = false`) |
+| Tags | Applied to every resource by the provider's `default_tags`, same keys as Azure |
+
+**Azure vs AWS differences seen in this step**
+- AWS has no resource group. Resources live directly in an account and region; tags and (from Phase 3) separate accounts provide grouping and isolation.
+- Bucket settings are separate Terraform resources, where Azure puts them inside the storage account block.
+- Locking uses a lock file (`aws.tfstate.tflock`) written with a conditional request, instead of a blob lease.
+
+**Validation**
+
+```
+terraform plan -out tfplan          -> Plan: 7 to add, 0 to change, 0 to destroy (reviewed before apply)
+aws s3api head-bucket               -> 404 before apply (name available)
+terraform init -migrate-state       -> state copied to the s3 backend
+S3 object versions                  -> bootstrap/aws.tfstate present; Terraform created and removed its .tflock during migration
+terraform plan                      -> No changes (state read from S3)
+Lock test: fake bootstrap/aws.tfstate.tflock created, then terraform plan
+                                    -> Error acquiring the state lock: PreconditionFailed
+Bucket checks                       -> versioning Enabled, SSE AES256, public access block 4/4, BucketOwnerEnforced, TLS-only policy
+```
