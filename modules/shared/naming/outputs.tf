@@ -25,6 +25,10 @@ output "subscription" {
   value = "sub-${var.project}-${var.env}"
 }
 
+output "organizational_unit" {
+  value = "ou-${var.project}-${var.env}"
+}
+
 output "s3_bucket" {
   value = join("-", compact(["s3", local.base, var.name_suffix]))
 }

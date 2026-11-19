@@ -137,3 +137,45 @@ One Log Analytics workspace in `sub-cloudctrls-prod` receives the subscription a
 - `az` confirmed the workspace settings (retention 30, cap 0.15), both diagnostic settings and their categories.
 - A query on the workspace returned rows in both `AzureActivity` and `StorageBlobLogs`.
 - The logging resource group was created under the Step 2c policies, confirming that a tagged `eastus` resource group is allowed. The deny path is still untested.
+
+## Step 4: AWS Organization, SCPs and IAM Identity Center
+
+**Status:** Complete, validated 2026-11-19. See [ADR-0009](../decisions/0009-aws-organization-and-identity.md).
+
+### 4a: IAM Identity Center (console)
+
+Enabling the organization instance has no API, so this part was done in the management account console:
+
+| Action | Setting |
+|---|---|
+| Enable IAM Identity Center | Organization instance, primary `us-west-2`, replicated to `us-east-2` (multi-Region, customer-managed KMS key) |
+| MFA | Every sign-in; authenticator apps and security keys; registration required at first sign-in |
+| User | `cloudctrls-admin` (built-in directory) |
+| Permission set | `AdministratorAccess`, 1-hour sessions, assigned on both accounts |
+| CLI | `aws configure sso` profiles `cloudctrls-mgmt` and `cloudctrls-prod`, one shared SSO session |
+
+### 4b: Organization structure and SCPs (Terraform)
+
+New root [environments/prod/aws/landing-zone](../../environments/prod/aws/landing-zone/main.tf), state key `prod/aws/landing-zone.tfstate` in the existing S3 bucket.
+
+| Resource | Result |
+|---|---|
+| `ou-cloudctrls` → `ou-cloudctrls-prod` | Created; workload account moved from the root into `ou-cloudctrls-prod` |
+| SCP `region-lock` on `ou-cloudctrls` | Deny outside `us-west-2`, global services exempt |
+| SCP `protect-security-services` on `ou-cloudctrls` | Deny stopping or deleting CloudTrail, Config, GuardDuty |
+| SCP `DenyLeaveAndCloseAccount` on the root | Pre-existing; imported unchanged |
+| Permission set, policy attachment, 2 account assignments | Imported from 4a |
+
+Seven existing objects were imported with `terraform import`, using IDs looked up at run time so none are stored in code.
+
+**Cost:** about $2 per month for the Identity Center multi-Region KMS key. Organizations, SCPs and Identity Center are free.
+
+**Validation:**
+- `terraform plan`: 6 to add, 3 to change (the account move, plus tags on imported objects), 0 to destroy. After apply, a fresh plan showed no changes.
+- `aws organizations` confirmed the OU tree, the account's new parent and the SCPs on `ou-cloudctrls`.
+- Denial tests from the workload account as `cloudctrls-admin`:
+  - `ec2:DescribeVpcs` in `us-east-1`: denied, "explicit deny in a service control policy" (`region-lock`).
+  - The same call in `us-west-2`: allowed.
+  - `cloudtrail:StopLogging` on a non-existent trail: denied by `protect-security-services` before the resource lookup.
+- The management account could still call `us-east-1`, confirming SCPs do not apply to it.
+- `bootstrap/aws` plan using the `cloudctrls-prod` profile: no changes, so the state backend no longer depends on `azx2`.

@@ -60,3 +60,17 @@
 - **Diagnosis:** the CLI caches the subscription list from sign-in, so it did not know the new subscription existed. The tags were sent at creation but were not yet visible while Azure finished provisioning the subscription.
 - **Resolution:** `az account list --refresh` made the subscription visible. A few minutes later the tags were present (`az tag list --resource-id /subscriptions/<id>`) and `terraform plan` reported no changes, without a second apply.
 - **Lesson:** newly created tenant-level objects are eventually consistent. Wait and re-check before re-applying, and refresh local CLI caches after creating subscriptions.
+
+## 10. `aws configure sso`: "Invalid start url provided" (Phase 3)
+
+- **Symptom:** `aws configure sso` failed with `invalid_request: Invalid start url provided`.
+- **Diagnosis:** the management account's console URL (`https://<account>.us-west-2.console.aws.amazon.com/...`) was entered. The SSO start URL is the AWS access portal URL, which only exists once Identity Center is enabled. The IAM user sign-in page (`<alias>.signin.aws.amazon.com`) is not it either.
+- **Resolution:** after enabling Identity Center and creating the user, used the **AWS access portal URL** (`https://<id>.awsapps.com/start`) from the Identity Center dashboard.
+- **Lesson:** AWS has three different sign-in URLs: IAM user sign-in, the console itself, and the Identity Center access portal. Only the last one works for `aws configure sso`.
+
+## 11. `Could not connect to the endpoint URL: "https://sts.json.amazonaws.com/"` (Phase 3)
+
+- **Symptom:** one SSO profile worked; the other failed with an endpoint containing `json`.
+- **Diagnosis:** `aws configure get region --profile cloudctrls-mgmt` returned `json`. The region and output-format answers were swapped during `aws configure sso`, so the CLI built the endpoint from the region `json`.
+- **Resolution:** `aws configure set region us-west-2 --profile cloudctrls-mgmt` and `aws configure set output json --profile cloudctrls-mgmt`.
+- **Lesson:** when an AWS endpoint hostname looks wrong, check the profile's region first.

@@ -29,6 +29,8 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Naming module outputs for management groups and subscriptions (5 tests)
 - ADR-0008 and Azure policy baseline on `mg-cloudctrls`: deny outside `eastus`, deny resource groups missing `project`, `env` or `managed_by` tags
 - Azure central logging: Log Analytics workspace (30-day retention, daily cap) receiving the subscription activity log and Terraform state storage access logs
+- ADR-0009 and AWS landing zone: OUs `ou-cloudctrls` and `ou-cloudctrls-prod`, SCPs `region-lock` and `protect-security-services`, IAM Identity Center with MFA replacing IAM user access
+- Naming module output for AWS organizational units
 
 ### Changed
 - Azure Terraform state backend moved from the shared subscription into `sub-cloudctrls-prod`; state re-imported and delete lock restored

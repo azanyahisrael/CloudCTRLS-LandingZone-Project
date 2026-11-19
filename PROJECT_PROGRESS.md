@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.4, AWS account structure, SCPs and IAM Identity Center.
+**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.5, AWS CloudTrail, KMS, Config and GuardDuty.
 
 ## Completed
 
@@ -24,6 +24,7 @@
 | 3.2b | Terraform state backend moved into `sub-cloudctrls-prod`, state re-imported, lock restored | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2b-move-the-terraform-state-backend) |
 | 3.2c | Azure policy baseline on `mg-cloudctrls` (eastus only, required resource group tags, Deny) | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2c-azure-policy-baseline), [ADR-0008](docs/decisions/0008-azure-policy-baseline.md) |
 | 3.3 | Azure central logging: Log Analytics workspace with subscription activity log and state storage access logs | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-3-azure-central-logging) |
+| 3.4 | AWS OUs, SCPs (region lock, security services protected) and IAM Identity Center; denial tests passed | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-4-aws-organization-scps-and-iam-identity-center), [ADR-0009](docs/decisions/0009-aws-organization-and-identity.md) |
 
 ## Blockers
 
@@ -31,10 +32,9 @@ None.
 
 ## Open risks
 
-- Long-lived AWS access key for `azx2` is active on another computer. Migrate it to `aws login`, then deactivate the key.
+- Long-lived AWS access key for `azx2` is still active. Identity Center replaces it (Step 3.4): set up the SSO profiles on the other computer, then deactivate the key.
 - The Azure subscription is shared with a separate project. Its spend counts against the same $10 budget, and subscription-scoped policy reaches it.
-- The CLI's AWS account is a member of an existing Organization. Ownership of the management account must be confirmed before Step 3.4.
 
 ## Next
 
-- Step 3.4: AWS account structure, SCPs and IAM Identity Center (confirm management account ownership first).
+- Step 3.5: AWS CloudTrail, KMS, Config and GuardDuty.

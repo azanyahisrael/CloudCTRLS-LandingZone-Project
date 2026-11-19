@@ -60,6 +60,11 @@ run "tenant_level_names" {
     condition     = output.management_group == "mg-cloudctrls-prod" && output.subscription == "sub-cloudctrls-prod"
     error_message = "Management group or subscription name breaks the mg-/sub-<project>-<env> convention."
   }
+
+  assert {
+    condition     = output.organizational_unit == "ou-cloudctrls-prod"
+    error_message = "AWS OU name breaks the ou-<project>-<env> convention."
+  }
 }
 
 run "rejects_unknown_env" {

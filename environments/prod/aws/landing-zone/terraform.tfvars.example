@@ -1,0 +1,8 @@
+# Copy to terraform.tfvars (git-ignored) and fill in.
+# Needs the cloudctrls-mgmt and cloudctrls-prod CLI profiles (`aws configure sso`).
+
+# Workload (member) account ID, 12 digits. Find it with:
+#   aws sts get-caller-identity --profile cloudctrls-prod --query Account --output text
+workload_account_id = "TODO"
+
+env = "prod"
