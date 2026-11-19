@@ -24,3 +24,6 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - ADR-0006: module and root configuration layout (per environment, cloud and layer; prod only, dev-ready)
 - `modules/shared/naming`: naming and tagging module for both clouds, covered by `terraform test` (4 tests)
 - Phase 3 inventory of both clouds and landing zone cost model; AWS budget raised from $1 to $10
+- ADR-0007: Azure management group hierarchy and dedicated subscription
+- `environments/prod/azure/landing-zone`: management groups `mg-cloudctrls` and `mg-cloudctrls-prod`, subscription `sub-cloudctrls-prod` with a $20 budget, all in Terraform
+- Naming module outputs for management groups and subscriptions (5 tests)

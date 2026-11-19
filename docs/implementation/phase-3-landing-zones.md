@@ -36,10 +36,38 @@ Deferred items cost $30 to $900 per month each and are not required to prove the
 
 | Step | Scope |
 |---|---|
-| 2 | Azure management group and policy baseline |
+| 2a | Azure management group hierarchy and dedicated subscription |
+| 2b | Move the Terraform state backend into the new subscription |
+| 2c | Azure policy baseline |
 | 3 | Azure central logging |
 | 4 | AWS account structure, SCPs, IAM Identity Center |
 | 5 | AWS CloudTrail, KMS, Config, GuardDuty |
 | 6 | Azure hub VNet and AWS VPC, no paid gateways |
 
 **Validation:** Azure management group placement, policy assignments and budget read with the Azure CLI. AWS Organization membership read with the AWS CLI. AWS budget set in the console by the account owner.
+
+## Step 2a: Management group hierarchy and dedicated subscription
+
+**Status:** Complete, validated 2026-11-19. See [ADR-0007](../decisions/0007-azure-management-hierarchy.md).
+
+CloudCTRLS gets its own place in Azure instead of sharing a subscription and management group with another project. Everything is created by the first `environments/` root ([ADR-0006](../decisions/0006-module-and-root-layout.md)): [environments/prod/azure/landing-zone](../../environments/prod/azure/landing-zone/), state key `prod/azure/landing-zone.tfstate`.
+
+| Resource | Value |
+|---|---|
+| Management group | `mg-cloudctrls`, directly under the Tenant Root Group |
+| Management group | `mg-cloudctrls-prod`, under `mg-cloudctrls` |
+| Subscription | `sub-cloudctrls-prod`, same billing invoice section as the existing subscription, standard tags |
+| Placement | `sub-cloudctrls-prod` associated with `mg-cloudctrls-prod` |
+| Budget | `budget-cloudctrls-prod`, $20/month; alerts at actual 50% and 80%, forecast 100%, sent to subscription Owners |
+
+- **Names** come from two new naming module outputs, `management_group` and `subscription` (`mg-`/`sub-<project>-<env>`, no region because these are tenant-level). A fifth test covers them: `Success! 5 passed, 0 failed.`
+- **Safety:** the subscription has `prevent_destroy`, and the provider sets `prevent_cancellation_on_destroy`, so no Terraform run can cancel it.
+- **Billing scope** is a git-ignored `terraform.tfvars` value marked `sensitive`, so it never appears in plan output or the repository.
+- **Cost:** $0. Management groups and an empty subscription are free.
+
+**Validation:**
+- `terraform plan` before apply: 5 to add, 0 to change, 0 to destroy; values reviewed from `terraform show -json`.
+- `terraform state list`: 5 resources.
+- Azure CLI: `mg-cloudctrls-prod` parent is `mg-cloudctrls`, whose parent is the Tenant Root Group; `mg-learning-lab` and `Azure-Sub-lab01` unchanged.
+- Owner role on `sub-cloudctrls-prod`; budget present at $20/month with three alerts; all six standard tags present on the subscription.
+- Final `terraform plan`: no changes.

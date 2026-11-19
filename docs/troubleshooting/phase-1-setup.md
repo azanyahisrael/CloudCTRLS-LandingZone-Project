@@ -1,4 +1,4 @@
-# Phase 1 and 2 Troubleshooting Log
+# Troubleshooting Log (Phases 1 to 3)
 
 ## 1. Git identity did not save
 
@@ -53,3 +53,10 @@
 - **Diagnosis:** the same `tfplan` had already been applied. A saved plan is a snapshot ("state is empty, create the bucket") and also records the backend it was made with (local), so re-applying it ignored the S3 state and tried to create the bucket again. AWS refused, so nothing changed, but the run wrote an empty `terraform.tfstate` back to the laptop.
 - **Resolution:** confirmed state in S3 was intact (`terraform state list`: 7 resources; `terraform plan`: No changes), then deleted the stale `tfplan` and empty local state.
 - **Lesson:** a saved plan is single-use. Always create a fresh `terraform plan -out tfplan` before each apply.
+
+## 9. New subscription "not found" and missing tags right after creation (Phase 3)
+
+- **Symptom:** after Terraform created `sub-cloudctrls-prod`, the Azure CLI reported `Subscription ... not found`, and a follow-up `terraform plan` wanted to add all six tags to the subscription.
+- **Diagnosis:** the CLI caches the subscription list from sign-in, so it did not know the new subscription existed. The tags were sent at creation but were not yet visible while Azure finished provisioning the subscription.
+- **Resolution:** `az account list --refresh` made the subscription visible. A few minutes later the tags were present (`az tag list --resource-id /subscriptions/<id>`) and `terraform plan` reported no changes, without a second apply.
+- **Lesson:** newly created tenant-level objects are eventually consistent. Wait and re-check before re-applying, and refresh local CLI caches after creating subscriptions.

@@ -46,6 +46,22 @@ run "matches_aws_bootstrap" {
   }
 }
 
+run "tenant_level_names" {
+  command = plan
+
+  variables {
+    cloud   = "azure"
+    env     = "prod"
+    region  = "eastus"
+    purpose = "landingzone"
+  }
+
+  assert {
+    condition     = output.management_group == "mg-cloudctrls-prod" && output.subscription == "sub-cloudctrls-prod"
+    error_message = "Management group or subscription name breaks the mg-/sub-<project>-<env> convention."
+  }
+}
+
 run "rejects_unknown_env" {
   command = plan
 

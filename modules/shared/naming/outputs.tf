@@ -16,6 +16,15 @@ output "storage_account" {
   }
 }
 
+# Tenant-level containers have no location, so they stop at the environment.
+output "management_group" {
+  value = "mg-${var.project}-${var.env}"
+}
+
+output "subscription" {
+  value = "sub-${var.project}-${var.env}"
+}
+
 output "s3_bucket" {
   value = join("-", compact(["s3", local.base, var.name_suffix]))
 }

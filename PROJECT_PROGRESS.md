@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.2, Azure management group and policy baseline.
+**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.2b, move the Terraform state backend into `sub-cloudctrls-prod`.
 
 ## Completed
 
@@ -20,6 +20,7 @@
 | 2.4b | AWS state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4b-aws-state-backend) |
 | 2.5 | Module layout and tested naming module | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-5-module-structure-and-naming-module), [ADR-0006](docs/decisions/0006-module-and-root-layout.md) |
 | 3.1 | Cloud inventory, Phase 3 cost model, AWS budget raised to $10 | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-1-inventory-and-cost-guardrails) |
+| 3.2a | Management group hierarchy, dedicated subscription `sub-cloudctrls-prod`, $20 budget | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2a-management-group-hierarchy-and-dedicated-subscription), [ADR-0007](docs/decisions/0007-azure-management-hierarchy.md) |
 
 ## Blockers
 
@@ -33,4 +34,5 @@ None.
 
 ## Next
 
-- Step 3.2: Azure management group and policy baseline.
+- Step 3.2b: move the Terraform state backend into `sub-cloudctrls-prod`.
+- Step 3.2c: Azure policy baseline on `mg-cloudctrls`.

@@ -1,0 +1,12 @@
+# Copy to terraform.tfvars (git-ignored) and fill in.
+
+# Subscription that holds the state backend today (Azure-Sub-lab01).
+subscription_id = "TODO"
+
+# MCA invoice section to bill the new subscription to. Find it with:
+#   az billing account list, then the billingSubscriptions API for an existing subscription.
+# Format: /providers/Microsoft.Billing/billingAccounts/<id>/billingProfiles/<id>/invoiceSections/<id>
+billing_scope_id = "TODO"
+
+env            = "prod"
+monthly_budget = 20
