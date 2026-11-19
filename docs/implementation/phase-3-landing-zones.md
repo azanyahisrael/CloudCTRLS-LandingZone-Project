@@ -116,3 +116,24 @@ Five assignments of built-in policies on `mg-cloudctrls`, inherited by every Clo
 - `terraform plan`: 5 to add, 0 to change, 0 to destroy; parameters reviewed (`eastus`; one tag name per assignment; enforcement on).
 - After apply, `az policy assignment list` on `mg-cloudctrls` returned all five.
 - Not yet tested: an attempted deny (resource group outside `eastus`, or without tags). The first resource group created in a later step exercises the tag rules.
+
+## Step 3: Azure central logging
+
+**Status:** Complete, validated 2026-11-19.
+
+One Log Analytics workspace in `sub-cloudctrls-prod` receives the subscription activity log and access logs for the Terraform state storage. Added in [logging.tf](../../environments/prod/azure/landing-zone/logging.tf).
+
+| Resource | Setting |
+|---|---|
+| `rg-cloudctrls-logging-prod-eastus` | `eastus`, standard tags |
+| `log-cloudctrls-logging-prod-eastus` | PerGB2018, 30-day retention, 0.15 GB daily cap |
+| Diagnostic setting on the subscription | All 8 activity log categories (Administrative, Security, ServiceHealth, Alert, Recommendation, Policy, Autoscale, ResourceHealth) |
+| Diagnostic setting on `stcloudctrlstfstatectrl1` blob service | StorageRead, StorageWrite, StorageDelete |
+
+**Cost:** about $0. Activity log ingestion is free, 30-day retention is included, and the daily cap keeps blob logs inside the 5 GB per month free allowance. Shortcut: once the cap is reached, logs are dropped for the rest of the day; raise or remove it when workloads log here.
+
+**Validation:**
+- `terraform plan`: 4 to add, 0 to change, 0 to destroy. After apply, a fresh plan showed no changes.
+- `az` confirmed the workspace settings (retention 30, cap 0.15), both diagnostic settings and their categories.
+- A query on the workspace returned rows in both `AzureActivity` and `StorageBlobLogs`.
+- The logging resource group was created under the Step 2c policies, confirming that a tagged `eastus` resource group is allowed. The deny path is still untested.
