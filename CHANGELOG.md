@@ -27,6 +27,7 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - ADR-0007: Azure management group hierarchy and dedicated subscription
 - `environments/prod/azure/landing-zone`: management groups `mg-cloudctrls` and `mg-cloudctrls-prod`, subscription `sub-cloudctrls-prod` with a $20 budget, all in Terraform
 - Naming module outputs for management groups and subscriptions (5 tests)
+- ADR-0008 and Azure policy baseline on `mg-cloudctrls`: deny outside `eastus`, deny resource groups missing `project`, `env` or `managed_by` tags
 
 ### Changed
 - Azure Terraform state backend moved from the shared subscription into `sub-cloudctrls-prod`; state re-imported and delete lock restored

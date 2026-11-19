@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.2c, Azure policy baseline on `mg-cloudctrls`.
+**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.3, Azure central logging.
 
 ## Completed
 
@@ -22,6 +22,7 @@
 | 3.1 | Cloud inventory, Phase 3 cost model, AWS budget raised to $10 | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-1-inventory-and-cost-guardrails) |
 | 3.2a | Management group hierarchy, dedicated subscription `sub-cloudctrls-prod`, $20 budget | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2a-management-group-hierarchy-and-dedicated-subscription), [ADR-0007](docs/decisions/0007-azure-management-hierarchy.md) |
 | 3.2b | Terraform state backend moved into `sub-cloudctrls-prod`, state re-imported, lock restored | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2b-move-the-terraform-state-backend) |
+| 3.2c | Azure policy baseline on `mg-cloudctrls` (eastus only, required resource group tags, Deny) | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-2c-azure-policy-baseline), [ADR-0008](docs/decisions/0008-azure-policy-baseline.md) |
 
 ## Blockers
 
@@ -35,4 +36,4 @@ None.
 
 ## Next
 
-- Step 3.2c: Azure policy baseline on `mg-cloudctrls`.
+- Step 3.3: Azure central logging.

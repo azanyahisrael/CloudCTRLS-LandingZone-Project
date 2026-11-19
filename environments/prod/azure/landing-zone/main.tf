@@ -75,6 +75,54 @@ resource "azurerm_management_group_subscription_association" "env" {
   subscription_id     = "/subscriptions/${azurerm_subscription.env.subscription_id}"
 }
 
+# Policy baseline (Step 3.2c): built-in definitions assigned once on mg-cloudctrls, so every
+# CloudCTRLS environment inherits them. Defender's default initiative already audits storage,
+# TLS and encryption settings; this baseline adds what it does not cover.
+locals {
+  location_policies = {
+    "allowed-locations"    = "Allowed locations"
+    "allowed-locations-rg" = "Allowed locations for resource groups"
+  }
+
+  required_rg_tags = ["project", "env", "managed_by"]
+}
+
+data "azurerm_policy_definition" "location" {
+  for_each     = local.location_policies
+  display_name = each.value
+}
+
+data "azurerm_policy_definition" "rg_tag" {
+  display_name = "Require a tag on resource groups"
+}
+
+# Deny anything outside the primary region (ADR-0005). Global resources are exempt by definition.
+resource "azurerm_management_group_policy_assignment" "location" {
+  for_each             = local.location_policies
+  name                 = each.key
+  display_name         = each.value
+  management_group_id  = azurerm_management_group.project.id
+  policy_definition_id = data.azurerm_policy_definition.location[each.key].id
+
+  parameters = jsonencode({
+    listOfAllowedLocations = { value = [var.location] }
+  })
+}
+
+# Deny resource groups missing a required tag. Azure-created groups (for example NetworkWatcherRG)
+# are blocked too, so those resources are created by Terraform with tags instead.
+resource "azurerm_management_group_policy_assignment" "rg_tag" {
+  for_each             = toset(local.required_rg_tags)
+  name                 = "rg-tag-${each.key}"
+  display_name         = "Require tag '${each.key}' on resource groups"
+  management_group_id  = azurerm_management_group.project.id
+  policy_definition_id = data.azurerm_policy_definition.rg_tag.id
+
+  parameters = jsonencode({
+    tagName = { value = each.key }
+  })
+}
+
 # The Azure-Sub-lab01 budget cannot see this subscription, so it gets its own.
 resource "azurerm_consumption_budget_subscription" "env" {
   name            = "budget-${var.project}-${var.env}"

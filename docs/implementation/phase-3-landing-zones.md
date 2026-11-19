@@ -94,3 +94,25 @@ The state storage account moved from `Azure-Sub-lab01` into `sub-cloudctrls-prod
 - `bootstrap/azure` plan before step 7: 1 to add (the lock), 0 to change, 0 to destroy; after apply: no changes.
 - `environments/prod/azure/landing-zone` plan: no changes.
 - `lock-cloudctrls-tfstate-prod-eastus` (`CanNotDelete`) present on the storage account in its new subscription.
+- The empty resource group left in `Azure-Sub-lab01` was confirmed empty and deleted.
+
+## Step 2c: Azure policy baseline
+
+**Status:** Complete, validated 2026-11-19. See [ADR-0008](../decisions/0008-azure-policy-baseline.md).
+
+Five assignments of built-in policies on `mg-cloudctrls`, inherited by every CloudCTRLS environment. Added to [environments/prod/azure/landing-zone](../../environments/prod/azure/landing-zone/main.tf).
+
+| Assignment | Rule | Effect |
+|---|---|---|
+| `allowed-locations` | Resources only in `eastus` | Deny |
+| `allowed-locations-rg` | Resource groups only in `eastus` | Deny |
+| `rg-tag-project` | Resource groups must have a `project` tag | Deny |
+| `rg-tag-env` | Resource groups must have an `env` tag | Deny |
+| `rg-tag-managed_by` | Resource groups must have a `managed_by` tag | Deny |
+
+**Cost:** $0. Built-in Azure Policy on Azure resources is free.
+
+**Validation:**
+- `terraform plan`: 5 to add, 0 to change, 0 to destroy; parameters reviewed (`eastus`; one tag name per assignment; enforcement on).
+- After apply, `az policy assignment list` on `mg-cloudctrls` returned all five.
+- Not yet tested: an attempted deny (resource group outside `eastus`, or without tags). The first resource group created in a later step exercises the tag rules.
