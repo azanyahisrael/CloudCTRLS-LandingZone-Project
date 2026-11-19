@@ -39,6 +39,6 @@ Each environment root owns its environment management group and subscription; gu
 
 ## Consequences
 
-- The Terraform state backend still lives in `Azure-Sub-lab01`, and the provider runs in that subscription until the backend moves into `sub-cloudctrls-prod` (Step 3.2b).
+- The Terraform state backend was moved from `Azure-Sub-lab01` into `sub-cloudctrls-prod` (Step 3.2b), so CloudCTRLS no longer depends on the shared subscription.
 - Tearing down the landing zone leaves the subscription in place; cancelling it is a deliberate manual action.
 - A future dev environment adds a subscription and `mg-cloudctrls-dev` through a new `environments/dev/` root, with no new code.

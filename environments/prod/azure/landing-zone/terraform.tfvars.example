@@ -1,6 +1,6 @@
 # Copy to terraform.tfvars (git-ignored) and fill in.
 
-# Subscription that holds the state backend today (Azure-Sub-lab01).
+# Subscription that holds the state backend (sub-cloudctrls-prod since Step 3.2b).
 subscription_id = "TODO"
 
 # MCA invoice section to bill the new subscription to. Find it with:

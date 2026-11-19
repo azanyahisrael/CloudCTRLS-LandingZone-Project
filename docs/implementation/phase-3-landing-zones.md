@@ -71,3 +71,26 @@ CloudCTRLS gets its own place in Azure instead of sharing a subscription and man
 - Azure CLI: `mg-cloudctrls-prod` parent is `mg-cloudctrls`, whose parent is the Tenant Root Group; `mg-learning-lab` and `Azure-Sub-lab01` unchanged.
 - Owner role on `sub-cloudctrls-prod`; budget present at $20/month with three alerts; all six standard tags present on the subscription.
 - Final `terraform plan`: no changes.
+
+## Step 2b: Move the Terraform state backend
+
+**Status:** Complete, validated 2026-11-19.
+
+The state storage account moved from `Azure-Sub-lab01` into `sub-cloudctrls-prod` with Azure's resource move, keeping its name, data and blob versions. Backend blocks needed no change: they address the storage account by name and authenticate with Entra ID.
+
+| # | Action | Why |
+|---|---|---|
+| 1 | Downloaded both state files to a local backup | Recovery point if the move failed |
+| 2 | Registered `Microsoft.Storage` on the new subscription, created an empty `rg-cloudctrls-tfstate-prod-eastus` there | A move needs a registered provider and an existing target resource group |
+| 3 | Removed the `CanNotDelete` lock | Locks block moves out of a resource group |
+| 4 | `validateMoveResources` dry run, then `az resource move` (164 s) | Confirm the move is allowed before committing to it |
+| 5 | Re-created the Storage Blob Data Contributor assignment | Role assignments on a resource are dropped when it changes subscription; without it Terraform cannot read state |
+| 6 | `bootstrap/azure`: `terraform state rm` and `terraform import` of the resource group, storage account, container and role assignment under their new IDs | Resource IDs include the subscription, so state still pointed at the old ones |
+| 7 | `terraform apply` re-created the lock from code | Restores the delete protection |
+| 8 | Both roots' `subscription_id` set to `sub-cloudctrls-prod` | The provider now runs in the CloudCTRLS subscription |
+
+**Validation:**
+- Both state blobs listed and `unlocked` after the move; Terraform read and wrote them.
+- `bootstrap/azure` plan before step 7: 1 to add (the lock), 0 to change, 0 to destroy; after apply: no changes.
+- `environments/prod/azure/landing-zone` plan: no changes.
+- `lock-cloudctrls-tfstate-prod-eastus` (`CanNotDelete`) present on the storage account in its new subscription.

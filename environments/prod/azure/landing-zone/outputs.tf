@@ -3,6 +3,6 @@ output "management_group_id" {
 }
 
 output "subscription_id" {
-  description = "Needed in Step 3.2b to move the state backend into this subscription."
+  description = "CloudCTRLS prod subscription; also holds the Terraform state backend."
   value       = azurerm_subscription.env.subscription_id
 }
