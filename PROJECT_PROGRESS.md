@@ -2,7 +2,7 @@
 
 ## Current
 
-**Phase 2 complete.** Next: Phase 3, Azure and AWS landing zones.
+**Phase 3 in progress** (Azure and AWS landing zones). Next: Step 3.2, Azure management group and policy baseline.
 
 ## Completed
 
@@ -19,6 +19,7 @@
 | 2.4a | Azure state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4a-azure-state-backend) |
 | 2.4b | AWS state backend, state migrated, lock tested | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-4b-aws-state-backend) |
 | 2.5 | Module layout and tested naming module | 2026-11-18 | [Phase 2 implementation](docs/implementation/phase-2-terraform-foundation.md#step-5-module-structure-and-naming-module), [ADR-0006](docs/decisions/0006-module-and-root-layout.md) |
+| 3.1 | Cloud inventory, Phase 3 cost model, AWS budget raised to $10 | 2026-11-19 | [Phase 3 implementation](docs/implementation/phase-3-landing-zones.md#step-1-inventory-and-cost-guardrails) |
 
 ## Blockers
 
@@ -27,8 +28,9 @@ None.
 ## Open risks
 
 - Long-lived AWS access key for `azx2` is active on another computer. Migrate it to `aws login`, then deactivate the key.
-- Leftover Azure resource group `rg-packer-lab` from an earlier project is the likely source of unexplained spend.
+- The Azure subscription is shared with a separate project. Its spend counts against the same $10 budget, and subscription-scoped policy reaches it.
+- The CLI's AWS account is a member of an existing Organization. Ownership of the management account must be confirmed before Step 3.4.
 
 ## Next
 
-- Phase 3: Azure and AWS landing zones (governance, identity, networking, logging). Raise the $1 AWS budget before adding KMS, CloudTrail and AWS Config.
+- Step 3.2: Azure management group and policy baseline.
