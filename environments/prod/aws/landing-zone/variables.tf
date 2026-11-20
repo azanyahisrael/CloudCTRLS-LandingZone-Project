@@ -10,9 +10,15 @@ variable "env" {
 }
 
 variable "region" {
-  description = "AWS home region (ADR-0005); the region-lock SCP allows it plus us-east-1."
+  description = "AWS home region (ADR-0005)."
   type        = string
   default     = "us-west-2"
+}
+
+variable "allowed_regions" {
+  description = "Regions the region-lock SCP allows (ADR-0009). us-east-1 is for the shared image pipeline."
+  type        = list(string)
+  default     = ["us-west-2", "us-east-1"]
 }
 
 variable "workload_account_id" {

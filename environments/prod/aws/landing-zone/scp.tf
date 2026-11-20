@@ -43,8 +43,7 @@ data "aws_iam_policy_document" "region_lock" {
     condition {
       test     = "StringNotEquals"
       variable = "aws:RequestedRegion"
-      # us-east-1: the workload account also runs the shared image pipeline there (ADR-0009).
-      values = [var.region, "us-east-1"]
+      values   = var.allowed_regions
     }
   }
 }
