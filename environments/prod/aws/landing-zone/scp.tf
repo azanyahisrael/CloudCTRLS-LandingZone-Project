@@ -22,7 +22,7 @@ resource "aws_organizations_policy_attachment" "deny_leave" {
   target_id = data.aws_organizations_organization.this.roots[0].id
 }
 
-# Everything outside var.region is denied except global services, which AWS serves from
+# Everything outside the allowed regions is denied except global services, which AWS serves from
 # us-east-1. List based on the AWS example SCP "Deny access to AWS based on the requested Region".
 data "aws_iam_policy_document" "region_lock" {
   statement {
@@ -43,7 +43,8 @@ data "aws_iam_policy_document" "region_lock" {
     condition {
       test     = "StringNotEquals"
       variable = "aws:RequestedRegion"
-      values   = [var.region]
+      # us-east-1: the workload account also runs the shared image pipeline there (ADR-0009).
+      values = [var.region, "us-east-1"]
     }
   }
 }

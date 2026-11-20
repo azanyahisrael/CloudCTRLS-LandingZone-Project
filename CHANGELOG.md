@@ -33,4 +33,5 @@ Format based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Naming module output for AWS organizational units
 
 ### Changed
+- AWS `region-lock` SCP now allows `us-east-1` as well as `us-west-2`, for the image pipeline sharing the workload account; its AMI copied to `us-west-2`
 - Azure Terraform state backend moved from the shared subscription into `sub-cloudctrls-prod`; state re-imported and delete lock restored

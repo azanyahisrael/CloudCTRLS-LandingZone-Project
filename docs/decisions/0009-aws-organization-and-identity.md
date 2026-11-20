@@ -16,11 +16,13 @@ The CloudCTRLS workload account was a member of an existing AWS Organization sit
 **3. Multi-Region Identity Center instance, replicated to US East (Ohio).** Chosen by the owner over a single-Region instance. Ohio is inland and away from the East Coast, consistent with [ADR-0005](0005-regions.md). It requires a customer-managed multi-Region KMS key (about $2 per month).
 
 **4. SCPs on `ou-cloudctrls`:**
-- `region-lock`: deny everything outside `us-west-2`, with global services (IAM, Organizations, STS, billing, Route 53, CloudFront and others) exempt.
+- `region-lock`: deny everything outside `us-west-2` and `us-east-1`, with global services (IAM, Organizations, STS, billing, Route 53, CloudFront and others) exempt.
 - `protect-security-services`: deny stopping or deleting CloudTrail, Config and GuardDuty. Creating and changing them stays allowed.
 - The existing `DenyLeaveAndCloseAccount` stays on the root and is now managed in Terraform.
 
 **5. One state bucket.** The landing zone root keeps its state in the existing bucket in the workload account (S3 buckets cannot move between accounts). Its backend uses the `cloudctrls-prod` profile while the provider uses `cloudctrls-mgmt`.
+
+**Amended 2026-11-20:** `us-east-1` added to `region-lock`. The workload account also runs the owner's image pipeline there, which the original `us-west-2`-only lock blocked. Chosen by the owner over dropping the lock or moving the pipeline. A copy of its AMI was also placed in `us-west-2`.
 
 ## Alternatives considered
 
@@ -31,6 +33,8 @@ The CloudCTRLS workload account was a member of an existing AWS Organization sit
 | Single-Region Identity Center | No KMS cost and no second Region; the owner chose Multi-Region. |
 | SCP denying the root user of member accounts | Not chosen by the owner. |
 | Second state bucket in the management account | Duplicates the backend for one root. |
+| Drop the region lock, or move the image pipeline to its own account | Considered when the lock blocked the pipeline; the owner chose to allow `us-east-1` instead. |
+| AWS Control Tower | Not evaluated before this decision. It builds on Organizations but adds two accounts and enables Config and CloudTrail across governed regions, a cost risk against the $10 budget. It can enroll this Organization later. |
 
 ## Consequences
 

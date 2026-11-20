@@ -161,7 +161,7 @@ New root [environments/prod/aws/landing-zone](../../environments/prod/aws/landin
 | Resource | Result |
 |---|---|
 | `ou-cloudctrls` → `ou-cloudctrls-prod` | Created; workload account moved from the root into `ou-cloudctrls-prod` |
-| SCP `region-lock` on `ou-cloudctrls` | Deny outside `us-west-2`, global services exempt |
+| SCP `region-lock` on `ou-cloudctrls` | Deny outside `us-west-2` (and `us-east-1` since 2026-11-20), global services exempt |
 | SCP `protect-security-services` on `ou-cloudctrls` | Deny stopping or deleting CloudTrail, Config, GuardDuty |
 | SCP `DenyLeaveAndCloseAccount` on the root | Pre-existing; imported unchanged |
 | Permission set, policy attachment, 2 account assignments | Imported from 4a |
@@ -179,3 +179,16 @@ Seven existing objects were imported with `terraform import`, using IDs looked u
   - `cloudtrail:StopLogging` on a non-existent trail: denied by `protect-security-services` before the resource lookup.
 - The management account could still call `us-east-1`, confirming SCPs do not apply to it.
 - `bootstrap/aws` plan using the `cloudctrls-prod` profile: no changes, so the state backend no longer depends on `azx2`.
+
+### 4c: Region lock amended (2026-11-20)
+
+The lock blocked an existing image pipeline in the workload account that uses an AMI in `us-east-1`.
+
+| Action | Result |
+|---|---|
+| `region-lock` detached temporarily (CLI, management account) | Pipeline access restored; AMI found in `us-east-1` |
+| `us-east-1` added to the SCP in Terraform, attachment re-applied | Plan: 1 to add, 1 to change, 0 to destroy |
+| AMI copied to `us-west-2` | Same name and tags; 30 GB unencrypted snapshot, about $1.50 per month |
+
+**Validation:** fresh `terraform plan` showed no changes; from the workload account `us-east-1` was allowed and `eu-west-1` returned "explicit deny in a service control policy".
+
