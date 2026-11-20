@@ -10,7 +10,7 @@ variable "env" {
 }
 
 variable "region" {
-  description = "AWS region (ADR-0005); the region-lock SCP allows only this one."
+  description = "AWS home region (ADR-0005); the region-lock SCP allows it plus us-east-1."
   type        = string
   default     = "us-west-2"
 }
